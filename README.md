@@ -31,7 +31,7 @@ Repoet er offentlig. Alt som ligger her, kan leses av alle.
 - **Gjester (`gjester`):** `{ navn: "Navn", rolle: "Dagens gjest", dato: "2026-11-15" },`. Bare bekreftede navn.
 - **Kofferten (`koffert`):** `pott: 25000` viser beløpet (`null` skjuler det). Lås opp et hint ved å bytte `{ tekst: null }` med `{ tekst: "Hinttekst" }`. Bilde fra viltkameraet: `bilde: "viltkamera.jpg"`.
 - **Tekstbåndet (`band`):** tekstene som ruller over siden.
-- **Partnere (`partner` og `partnere`):** `partner` er hovedpartneren, `partnere` er lista under. `lenke: "https://…"` gjør navnet klikkbart, og `logo: "assets/partnere/filnavn.webp"` viser logoen på en hvit plate. Logofilene ligger i `assets/partnere/`. Legg til eller fjern en linje i `partnere` for å endre lista.
+- **Partnere (`partner` og `partnere`):** `partner` er hovedpartneren, `partnere` er lista under. `lenke: "https://…"` gjør navnet klikkbart, og `logo: "assets/partnere/filnavn.webp"` viser logoen rett på den mørke flaten. Bruk en versjon laget for mørk bakgrunn (lys skrift, gjennomsiktig bakgrunn). Logofilene ligger i `assets/partnere/`. Legg til eller fjern en linje i `partnere` for å endre lista.
 - **Spørsmål (`faq`):** `{ q: "Spørsmål?", a: "Svar." },`.
 - **Lenker (`lenker`):** fyll inn adressen til TikTok, Instagram og YouTube. Tomme felt vises ikke.
 - **Modus:** `"auto"` går live av seg selv kl. 15:00 den 14.11. Skriv `"ferdig"` når det er over.
