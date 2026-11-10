@@ -459,7 +459,6 @@ p { margin: 0; }
     <a href="#faq-seksjon">FAQ</a>
   </nav>
   <div class="top-hoyre">
-    <a href="#partner-seksjon" class="top-annonse" id="top-annonse">Annonse: <b id="top-partner"></b></a>
     <a class="top-knapp" id="top-twitch" href="https://www.twitch.tv/oskarwesterlin" target="_blank" rel="noopener">Se på Twitch</a>
   </div>
 </header>
@@ -782,7 +781,7 @@ const CONFIG = {
     else $("faq").innerHTML = faq.map((f) => "<details><summary>" + esc(f.q) + IKON.pluss + "</summary><p>" + esc(f.a) + "</p></details>").join("");
     // partner
     const p = CONFIG.partner || {};
-    if (!har(p.navn)) { $("partner-seksjon").hidden = true; $("top-annonse").remove(); }
+    if (!har(p.navn)) { $("partner-seksjon").hidden = true; }
     else {
       const innhold = har(p.logo) ? '<span class="plate"><img src="' + esc(p.logo) + '" alt="' + esc(p.navn) + '"></span>' : esc(p.navn);
       $("partner-navn").innerHTML = har(p.lenke)
@@ -795,7 +794,6 @@ const CONFIG = {
       const flere = (CONFIG.partnere || []).filter((x) => x && har(x.navn));
       const navn = [p.navn].concat(flere.map((x) => x.navn));
       $("partner-navn2").textContent = navn.length > 1 ? navn.slice(0, -1).join(", ") + " og " + navn[navn.length - 1] : navn[0];
-      $("top-partner").textContent = p.navn;
       $("partnere").hidden = !flere.length;
       $("partnere-liste").innerHTML = flere.map((x) => "<li>" + merke(x) + "</li>").join("");
     }
