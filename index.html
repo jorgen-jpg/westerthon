@@ -292,6 +292,17 @@ p { margin: 0; }
 .baand li svg { width: 12px; height: 12px; color: var(--magenta); flex: none; }
 @keyframes rull { to { transform: translateX(-50%); } }
 
+/* Oppdraget: det ene store målet, midt på siden */
+.oppdrag { position: relative; display: grid; justify-items: center; gap: 6px; text-align: center; padding: 0 max(16px, env(safe-area-inset-right, 0px)) clamp(36px, 7vw, 72px) max(16px, env(safe-area-inset-left, 0px)); }
+.oppdrag-etikett { font: 700 13px/1.3 var(--f-tekst); letter-spacing: 0.14em; text-transform: uppercase; color: var(--dempet); }
+.oppdrag-tittel { font: italic 400 clamp(38px, 10.5vw, 104px)/0.95 var(--f-display); text-transform: uppercase; letter-spacing: 0.01em; color: var(--tekst); text-wrap: balance; }
+.oppdrag-status { width: min(100%, 560px); display: grid; gap: 8px; margin-top: 14px; }
+.oppdrag-status p { font: 600 14px/1.3 var(--f-tekst); color: var(--tekst); font-variant-numeric: tabular-nums; }
+.goals-grid[data-tom] { grid-template-columns: minmax(0, 1fr); max-width: 640px; }
+#goals .goals-grid[data-tom] .stige { margin-inline: 0; border-top: 0; }
+#goals .goals-grid[data-tom] .panel-tom { margin: 0; }
+.oppdrag-tall { font: 400 clamp(22px, 5vw, 40px)/1.1 var(--f-display); text-transform: uppercase; letter-spacing: 0.03em; color: var(--sol-gul); font-variant-numeric: tabular-nums; }
+
 /* ---------- Seksjoner ---------- */
 .seksjon { padding-block: clamp(40px, 7vw, 80px); scroll-margin-top: calc(var(--st) + var(--topp)); }
 .seksjon + .seksjon { border-top: 1px solid var(--strek); }
@@ -452,7 +463,7 @@ p { margin: 0; }
   <nav class="top-nav" aria-label="Seksjoner">
     <a href="#skall" data-fane="program">Program</a>
     <a href="#goals">Sub goals</a>
-    <a href="#gjester">Gjester</a>
+    <a href="#gjester" id="nav-gjester">Gjester</a>
     <a href="#koffert">Kofferten</a>
     <a href="#faq-seksjon">FAQ</a>
   </nav>
@@ -485,6 +496,15 @@ p { margin: 0; }
   </section>
 
   <div class="flate-baand raster" id="baand-ramme" aria-label="Tekstbånd">
+    <div class="oppdrag" id="oppdrag" hidden>
+      <p class="oppdrag-etikett" id="oppdrag-etikett"></p>
+      <p class="oppdrag-tittel" id="oppdrag-tittel"></p>
+      <p class="oppdrag-tall"><b id="oppdrag-tall"></b> subs</p>
+      <div class="oppdrag-status" id="oppdrag-status" hidden>
+        <div class="linje" role="progressbar" aria-label="Framdrift mot målet" id="oppdrag-linje"><div class="linje-fyll" id="oppdrag-fyll"></div></div>
+        <p id="oppdrag-tekst"></p>
+      </div>
+    </div>
     <div class="baand"><div class="baand-spor" id="baand-spor"></div></div>
   </div>
 
@@ -492,7 +512,7 @@ p { margin: 0; }
     <div class="wrap">
       <div class="hode">
         <h2 id="goals-tittel">Sub goals</h2>
-        <p>Hver sub legger ett minutt til streamen og drar oss ett hakk opp stigen.</p>
+        <p id="goals-ingress">Hver sub legger ett minutt til streamen.</p>
       </div>
       <div class="goals-grid">
         <div class="teller-blokk">
@@ -588,12 +608,12 @@ const CONFIG = {
   // når alle målene under er nådd. Sett til false når hele stigen er lagt ut.
   flereKommer: true,
 
-  // Det store målet nederst i stigen. Vises alltid, også mens målene imellom er hemmelige.
+  // Det store målet. Vises midt på siden, i bunnlinja og nederst i stigen, også mens sub goals er hemmelige.
   // Sett rekord: null for å fjerne det.
   rekord: {
     subs: 23200,
-    etikett: "Norgesrekord",
-    tittel: "PlayStation 5 Pro, 10 GTA VI og 10 årsforbruk av Domino's"
+    etikett: "Mål",
+    tittel: "Slå Norgesrekorden"
   },
 
   // Valgfritt: vis bare mål til og med dette tallet (f.eks. 2500). null viser alle målene under.
@@ -601,15 +621,7 @@ const CONFIG = {
   visTil: null,
 
   // Sub goals. type: "giveaway" | "stunt" | "chat". hemmelig: true viser «Hemmelig mål» til målet er nådd.
-  goals: [
-    { subs: 250,   tittel: "Domino's-gavekort til 10 seere", type: "giveaway" },
-    { subs: 500,   tittel: "Et års forbruk av Domino's", type: "giveaway" },
-    { subs: 750,   tittel: "Chatten velger Oskars antrekk i 24 timer", type: "stunt" },
-    { subs: 1000,  tittel: "AirPods Pro til 3 seere", type: "giveaway" },
-    { subs: 1500,  tittel: "Oskar kan ikke si «chat» i 24 timer", type: "stunt" },
-    { subs: 2000,  tittel: "Chatten velger hårfarge", type: "stunt" },
-    { subs: 2500,  tittel: "PS5 Pro + GTA VI", type: "giveaway" }
-  ],
+  goals: [],
 
   // Program per dag. Tom liste viser «Program kommer». Eksempel på en dag:
   //   { dato: "2026-11-14", punkter: [
@@ -920,8 +932,8 @@ const CONFIG = {
     let sprang = "";
     if (flere && !rekordNaadd) {
       const siste = goals.length ? goals[goals.length - 1].subs : 0;
-      const mellom = rekord ? "<span>Mye skal skje mellom " + tall(siste) + " og " + tall(rekord.subs) + " subs.</span>" : "";
-      sprang = '<li class="mal mal-sprang" data-tilstand="kommende"><span class="sprang-linje" aria-hidden="true"></span><span class="sprang-tekst"><b>Flere mål avsløres underveis</b>' + mellom + "</span></li>";
+      const mellom = !goals.length ? "<span>De avsløres underveis.</span>" : rekord ? "<span>Mye skal skje mellom " + tall(siste) + " og " + tall(rekord.subs) + " subs.</span>" : "";
+      sprang = '<li class="mal mal-sprang" data-tilstand="kommende"><span class="sprang-linje" aria-hidden="true"></span><span class="sprang-tekst"><b>' + (goals.length ? "Flere mål avsløres underveis" : "Sub goals kommer") + "</b>" + mellom + "</span></li>";
     }
     let rek = "";
     if (rekord) {
@@ -938,17 +950,39 @@ const CONFIG = {
     const { goals, nesteIdx, alleNaadd, venter, rekord, rekordNaadd, rekordNeste, noe } = st;
     sett($("subs-tall"), tall(subs));
     sett($("subs-etikett"), subs === 1 ? "sub så langt" : "subs så langt");
-    $("alle").hidden = !(alleNaadd || venter);
+    const harMaal = nesteIdx >= 0 || (rekord && !rekordNaadd);   // det finnes noe å telle mot
+    $("alle").hidden = harMaal || !(alleNaadd || venter);
     settHtml($("alle"), venter ? "<b>Nye mål kommer</b><p>Alle målene så langt er nådd.</p>"
       : rekordNaadd ? "<b>Rekorden er slått</b><p>" + esc(har(rekord.etikett) ? rekord.etikett + ": " : "") + tall(rekord.subs) + " subs er passert.</p>"
       : "<b>Alle mål er nådd</b><p>Hele stigen er klatret.</p>");
     const tomHtml = '<li class="tom panel-tom">' + IKON.kalender + "<div><b>Målene kommer snart</b><p>Stigen legges ut her.</p></div></li>";
-    const stige = noe ? stigeHtml(st) : tomHtml;
+    const kommerHtml = '<li class="tom panel-tom">' + IKON.kalender + "<div><b>Sub goals kommer</b><p>De avsløres underveis.</p></div></li>";
+    const stige = !goals.length ? kommerHtml : noe ? stigeHtml(st) : tomHtml;
     settHtml($("stige"), stige);
     settHtml($("stige-panel"), stige);
     const neste = $("neste");
     // målet vi teller mot akkurat nå: neste avslørte mål, eller rekordmålet når ingenting er skjult imellom
-    const g = nesteIdx >= 0 ? goals[nesteIdx] : rekordNeste ? rekord : null;
+    const g = nesteIdx >= 0 ? goals[nesteIdx] : rekord && !rekordNaadd ? rekord : null;
+    const erRekord = !!g && g === rekord;
+    const etikett = erRekord ? (har(rekord.etikett) ? rekord.etikett : "Mål") : "Neste mål";
+    // oppdraget midt på siden
+    $("oppdrag").hidden = !rekord;
+    if (rekord) {
+      sett($("oppdrag-etikett"), har(rekord.etikett) ? rekord.etikett : "Mål"); sett($("oppdrag-tittel"), rekord.tittel || ""); sett($("oppdrag-tall"), tall(rekord.subs));
+      const live = modus() !== "nedtelling";            // før start er det ingenting å telle
+      $("oppdrag-status").hidden = !live;
+      if (live) {
+        const a = rekordNaadd ? 1 : Math.max(0, Math.min(0.999, subs / rekord.subs));
+        $("oppdrag-fyll").style.width = (a * 100).toFixed(1) + "%";
+        const l = $("oppdrag-linje"); l.setAttribute("aria-valuemin", 0); l.setAttribute("aria-valuemax", rekord.subs); l.setAttribute("aria-valuenow", Math.min(subs, rekord.subs));
+        sett($("oppdrag-tekst"), rekordNaadd ? tall(subs) + " subs. Rekorden er slått." : tall(subs) + (subs === 1 ? " sub" : " subs") + " · " + tall(rekord.subs - subs) + " igjen");
+      }
+    }
+    // uten avslørte sub goals: bare én rolig «kommer»-boks, ikke teller og stige
+    const ingenGoals = !goals.length;
+    document.querySelector(".goals-grid").toggleAttribute("data-tom", ingenGoals);
+    document.querySelector(".teller-blokk").hidden = ingenGoals;
+    sett($("goals-ingress"), ingenGoals ? "Hver sub legger ett minutt til streamen." : "Hver sub legger ett minutt til streamen og drar oss ett hakk opp stigen.");
     let lTopp = "", lTittel = "", andel = 0;
     if (g) {
       const fra = nesteIdx > 0 ? goals[nesteIdx - 1].subs : nesteIdx === 0 ? 0 : goals.length ? goals[goals.length - 1].subs : 0;
@@ -956,11 +990,11 @@ const CONFIG = {
       andel = Math.max(0, Math.min(0.999, (subs - fra) / (g.subs - fra)));
       neste.hidden = false;
       settHtml(neste,
-        '<div class="neste-topp"><span class="neste-etikett">Neste mål</span><span class="neste-mal">' + tall(g.subs) + " subs</span></div>" +
+        '<div class="neste-topp"><span class="neste-etikett">' + esc(etikett) + "</span>" + '<span hidden></span><span class="neste-mal">' + tall(g.subs) + " subs</span></div>" +
         '<p class="neste-tittel">' + esc(tittel) + "</p>" +
-        '<div class="linje" role="progressbar" aria-label="Framdrift mot neste mål" aria-valuemin="' + fra + '" aria-valuemax="' + g.subs + '" aria-valuenow="' + subs + '"><div class="linje-fyll" style="width:' + (andel * 100).toFixed(1) + '%"></div></div>' +
+        '<div class="linje" role="progressbar" aria-label="Framdrift mot målet" aria-valuemin="' + fra + '" aria-valuemax="' + g.subs + '" aria-valuenow="' + subs + '"><div class="linje-fyll" style="width:' + (andel * 100).toFixed(1) + '%"></div></div>' +
         '<div class="linje-ender"><span>' + tall(fra) + "</span><b>" + tall(g.subs - subs) + " igjen</b><span>" + tall(g.subs) + "</span></div>");
-      lTopp = "Neste mål · " + tall(g.subs) + " subs";
+      lTopp = etikett + " · " + tall(g.subs) + " subs";
       lTittel = tittel;
     } else {
       neste.hidden = true;
@@ -975,7 +1009,7 @@ const CONFIG = {
     $("l-linje").parentNode.hidden = !noe;
     $("l-mal").hidden = !noe;
     if (mobil) {
-      const kort = g ? "<b>Neste mål " + tall(g.subs) + ":</b> " + esc(lTittel) : lTopp ? "<b>" + esc(lTopp) + "</b>" : "";
+      const kort = g ? "<b>" + esc(etikett) + " " + tall(g.subs) + ":</b> " + esc(lTittel) : lTopp ? "<b>" + esc(lTopp) + "</b>" : "";
       settHtml($("l-mal-mobil") || lagMobilMal(), kort);
     }
   }
@@ -1044,10 +1078,9 @@ const CONFIG = {
   function tegnGjester() {
     const liste = (CONFIG.gjester || []).filter((g) => g && har(g.navn));
     const boks = $("gjester-innhold");
-    if (!liste.length) {
-      settHtml(boks, '<div class="tom">' + IKON.stol + "<div><b>Gjestene avsløres fortløpende</b></div></div>");
-      return;
-    }
+    $("gjester").hidden = !liste.length;          // tom liste: ingen seksjon og ingen menylenke
+    const nav = $("nav-gjester"); if (nav) nav.hidden = !liste.length;
+    if (!liste.length) return;
     settHtml(boks, '<ul class="gjester">' + liste.map((g) => {
       const deler = [har(g.rolle) ? esc(g.rolle) : "", har(g.dato) && /^\d{4}-\d{2}-\d{2}$/.test(g.dato) ? esc(kortDato.format(osloTidspunkt(g.dato, "12:00"))) : ""].filter(Boolean);
       return '<li class="gjest"><b>' + esc(g.navn) + "</b>" + (deler.length ? "<span>" + deler.join(", ") + "</span>" : "") + "</li>";

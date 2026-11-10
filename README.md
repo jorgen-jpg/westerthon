@@ -24,7 +24,8 @@ Repoet er offentlig. Alt som ligger her, kan leses av alle.
 
 - **Sub-tallet:** `subs: { antall: 1800 }`.
 - **Sub goals (`goals`):** én linje per mål: `{ subs: 6000, tittel: "Noe gøy", type: "stunt" },`. Type er `"giveaway"`, `"stunt"` eller `"chat"`. Skriv `hemmelig: true` for å skjule tittelen til målet er nådd.
-- **Det store målet (`rekord`):** står alltid nederst i stigen, med egen farge. Endre `subs`, `etikett` og `tittel`. Skriv `rekord: null` for å fjerne det.
+- **Det store målet (`rekord`):** vises midt på siden, i bunnlinja og nederst i stigen. Endre `subs`, `etikett` og `tittel`. Under streamen viser det også hvor mange subs som gjenstår. Skriv `rekord: null` for å fjerne det.
+- **Tomme lister skjules eller viser «kommer»:** `goals: []` viser «Sub goals kommer», `program: []` viser «Program kommer», og `gjester: []` skjuler hele gjesteseksjonen.
 - **Flere mål på vei (`flereKommer`):** `flereKommer: true` viser raden «Flere mål avsløres underveis» nederst i stigen, og «Nye mål kommer» når alle målene i fila er nådd. Sett `false` når hele stigen er lagt ut.
 - **Avsløre nye mål:** lim inn en ny linje i `goals` og lagre. Mål som står i fila kan leses i kildekoden, også når de er skjult med `visTil`. Hold derfor hemmelige mål utenfor fila, og utenfor dette repoet, til de skal ut.
 - **Program (`program`):** `program: []` viser «Program kommer». Legg inn én blokk per dag med `dato: "2026-11-16"`. Hvert punkt: `{ tid: "20:00", slutt: "21:00", tittel: "…", notat: "…" },`. `slutt` og `notat` er valgfrie. Uten klokkeslett: `tid: ""`. Da står punktet som «Senere».
