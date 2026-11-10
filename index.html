@@ -34,15 +34,11 @@
   --tekst: #F6EEF3;         /* lys tekst */
   --dempet: #B3A3B0;        /* grå etiketter */
   --magenta: #AD107D;       /* aksent med hvit tekst: knapp, aktiv flate */
-  --magenta-topp: #C2147F;  /* bunnlinja, øverst */
-  --magenta-bunn: #7E0B5C;  /* bunnlinja, nederst */
   --magenta-tekst: #FF5AA5; /* rosa neon som tekst på mørkt */
   --paa-magenta: #FFFFFF;   /* tekst på magenta */
-  --paa-magenta-dempet: #FFC2DF;      /* dempede bokstaver i stor teller (desktop) */
-  --paa-magenta-dempet-liten: #FFE3F0; /* dempede bokstaver under 24 px (mobil), ≥ 4,5:1 */
   --sol: #F76850;           /* solnedgang, brukes sparsomt */
   --sol-gul: #FFC94A;
-  --raster: #6E0D50;        /* rasterprikker */
+  --raster: #33202F;        /* rasterprikker, nesten nøytrale */
   --spiller: #000000;       /* bak iframen */
   --vilt: #B9D4A6;          /* viltkamera */
   --viltbunn: #1B2A20;
@@ -237,7 +233,7 @@ p { margin: 0; }
 .tom { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 14px; align-items: start; padding: 18px; border: 1px dashed var(--dempet); }
 .panel-tom { margin: 16px var(--gr) 16px var(--gl); }
 @media (min-width: 960px) { .panel-tom { margin: 20px; } }
-.tom svg { width: 40px; height: 40px; color: var(--magenta-tekst); }
+.tom svg { width: 40px; height: 40px; color: var(--dempet); }
 .tom b { display: block; font: 700 21px/1.1 var(--f-display); text-transform: uppercase; }
 .tom p { color: var(--dempet); margin-top: 4px; }
 
@@ -264,7 +260,7 @@ p { margin: 0; }
 .mal-type { display: block; font-size: 12px; color: var(--dempet); }
 .mal-merke { font: 700 12px/1 var(--f-tekst); padding: 5px 7px; white-space: nowrap; }
 .mal[data-tilstand="naadd"] .mal-subs, .mal[data-tilstand="naadd"] .mal-tittel { color: var(--dempet); }
-.mal[data-tilstand="naadd"] .mal-merke { color: var(--magenta-tekst); box-shadow: inset 0 0 0 1px currentColor; }
+.mal[data-tilstand="naadd"] .mal-merke { color: var(--dempet); box-shadow: inset 0 0 0 1px currentColor; }
 .mal[data-tilstand="neste"] { background: color-mix(in srgb, var(--magenta) 9%, var(--flate)); box-shadow: inset 4px 0 0 var(--magenta); }
 .mal[data-tilstand="neste"] .mal-tittel { font-weight: 700; }
 .mal[data-tilstand="neste"] .mal-merke { background: var(--magenta); color: var(--paa-magenta); }
@@ -411,8 +407,10 @@ p { margin: 0; }
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 35;
   min-height: calc(var(--bunn) + var(--sb));
   padding: 3px var(--gr) calc(3px + var(--sb)) var(--gl);
-  background: linear-gradient(180deg, var(--magenta-topp), var(--magenta-bunn));
-  color: var(--paa-magenta);
+  background: var(--svart);
+  border-top: 2px solid transparent;
+  border-image: linear-gradient(90deg, var(--magenta), var(--sol), var(--sol-gul)) 1;
+  color: var(--tekst);
   display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto; column-gap: 12px; align-content: center;
 }
 .l-mal { grid-column: 1; grid-row: 1; min-width: 0; font: 600 12px/1.15 var(--f-tekst); align-self: center; }
@@ -420,7 +418,7 @@ p { margin: 0; }
 .l-linje { display: none; }
 .l-etikett { grid-column: 2; grid-row: 1; font: 700 12px/1.3 var(--f-tekst); letter-spacing: 0.06em; text-transform: uppercase; text-align: right; white-space: nowrap; }
 .l-teller { grid-column: 1 / -1; grid-row: 2; font: italic 700 min(28px, 7.4vw)/1 var(--f-display); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; text-align: center; white-space: nowrap; }
-.l-teller i { font-style: inherit; margin-left: 0.07em; color: var(--paa-magenta-dempet-liten); }  /* samme skråstilling som tallene, ellers lener tallet seg inn i bokstaven */
+.l-teller i { font-style: inherit; margin-left: 0.07em; color: var(--dempet); }  /* samme skråstilling som tallene, ellers lener tallet seg inn i bokstaven */
 .l-klokke { display: none; }
 .linjen[data-modus="ferdig"] .l-teller { display: none; }
 .linjen[data-modus="ferdig"] .l-etikett { grid-column: 1 / -1; grid-row: 2; text-align: center; font: 700 22px/1.1 var(--f-display); letter-spacing: 0.03em; }
@@ -433,7 +431,7 @@ p { margin: 0; }
   .l-linje span { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, var(--sol), var(--sol-gul)); }
   .l-etikett { grid-column: 2; grid-row: 1; text-align: center; }
   .l-teller { grid-column: 2; grid-row: 2; font-size: 42px; line-height: 1; }
-  .l-teller i { color: var(--paa-magenta-dempet); }
+  .l-teller i { color: var(--dempet); }
   .linjen[data-modus="ferdig"] .l-etikett { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-size: 30px; }
   .l-klokke { display: block; grid-column: 3; grid-row: 1 / span 2; align-self: center; justify-self: end; font: 700 20px/1.1 var(--f-display); text-transform: lowercase; letter-spacing: 0.02em; white-space: nowrap; }
 }
@@ -743,7 +741,7 @@ const CONFIG = {
 
   /* ---------- ikoner (egne) ---------- */
   const IKON = {
-    naadd: '<svg viewBox="0 0 22 22" aria-hidden="true"><rect x="1" y="1" width="20" height="20" fill="var(--magenta)"/><path d="M6 11.5l3.2 3.2L16 7.8" fill="none" stroke="var(--paa-magenta)" stroke-width="2.6" stroke-linecap="square"/></svg>',
+    naadd: '<svg viewBox="0 0 22 22" aria-hidden="true"><rect x="2" y="2" width="18" height="18" fill="none" stroke="var(--dempet)" stroke-width="2"/><path d="M6.5 11.5l3 3L15.5 8" fill="none" stroke="var(--dempet)" stroke-width="2.4" stroke-linecap="square"/></svg>',
     neste: '<svg viewBox="0 0 22 22" aria-hidden="true"><path d="M11 1.5 20.5 11 11 20.5 1.5 11z" fill="none" stroke="var(--magenta-tekst)" stroke-width="2.2"/><path d="M11 7 15 11 11 15 7 11z" fill="var(--magenta-tekst)"/></svg>',
     kommende: '<svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="8.5" fill="none" stroke="var(--dempet)" stroke-width="2"/></svg>',
     hemmelig: '<svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="8.5" fill="none" stroke="var(--dempet)" stroke-width="2" stroke-dasharray="3 2.4"/><text x="11" y="15.2" text-anchor="middle" font-size="11" font-weight="700" font-family="sans-serif" fill="var(--dempet)">?</text></svg>',
@@ -874,7 +872,7 @@ const CONFIG = {
       const d = osloDeler(START);
       html = '<div class="plakat raster"><p class="plakat-liten">Oskar Westerlins subathon på Twitch</p><p class="plakat-ord" id="plakat-ord">' + ordmerkeHtml() + "</p>" +
         '<p class="plakat-dato">' + esc(stor(dagTekst(osloDag(START)))) + " kl. " + pad(d.hour) + ":" + pad(d.minute) + "</p>" +
-        '<a class="knapp" href="' + esc(kanalUrl) + '" target="_blank" rel="noopener">' + IKON.hjerte + "Følg på Twitch</a></div>";
+        '<a class="knapp knapp--strek" href="' + esc(kanalUrl) + '" target="_blank" rel="noopener">' + IKON.hjerte + "Følg på Twitch</a></div>";
     }
     settHtml(sp, html);
     requestAnimationFrame(tilpassOrdmerke);
