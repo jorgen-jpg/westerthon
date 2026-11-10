@@ -38,6 +38,7 @@
   --magenta-bunn: #7E0B5C;  /* bunnlinja, nederst */
   --magenta-tekst: #FF5AA5; /* rosa neon som tekst på mørkt */
   --paa-magenta: #FFFFFF;   /* tekst på magenta */
+  --plate: #FFFFFF;         /* hvit plate bak partnerlogoer, så de vises i egne farger */
   --paa-magenta-dempet: #FFC2DF;      /* dempede bokstaver i stor teller (desktop) */
   --paa-magenta-dempet-liten: #FFE3F0; /* dempede bokstaver under 24 px (mobil), ≥ 4,5:1 */
   --sol: #F76850;           /* solnedgang, brukes sparsomt */
@@ -383,6 +384,11 @@ p { margin: 0; }
 .partnere ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; column-gap: 28px; row-gap: 0; }
 .partnere .partner-navn { font-size: 19px; }
 .partnere .partner-navn img { max-height: 36px; }
+.plate { display: inline-flex; align-items: center; justify-content: center; background: var(--plate); padding: 12px 18px; }
+.partner-navn .plate img { display: block; height: 40px; max-height: none; width: auto; max-width: 100%; }
+.partnere ul { gap: 12px; }
+.partnere .plate { padding: 10px 14px; }
+.partnere .partner-navn .plate img { height: 28px; }
 
 /* ---------- FAQ ---------- */
 .faq { max-width: 780px; border-top: 1px solid var(--strek); }
@@ -635,13 +641,13 @@ const CONFIG = {
   band: [ "1 min pr. sub", "La oss slå Norgesrekord!" ],
 
   // Hovedpartner. Merkes alltid «Annonse». lenke og logo kan stå tomme.
-  partner: { navn: "Komplett", lenke: "", logo: "" },
+  partner: { navn: "Komplett", lenke: "", logo: "assets/partnere/komplett.webp" },
 
   // Øvrige partnere, vises under hovedpartneren. Samme felter. Tom liste skjuler raden.
   partnere: [
-    { navn: "Ønsk", lenke: "", logo: "" },
-    { navn: "Storytel", lenke: "", logo: "" },
-    { navn: "Domino's", lenke: "", logo: "" }
+    { navn: "Ønsk", lenke: "", logo: "assets/partnere/onsk.webp" },
+    { navn: "Storytel", lenke: "", logo: "assets/partnere/storytel.webp" },
+    { navn: "Domino's", lenke: "", logo: "assets/partnere/dominos.webp" }
   ],
 
   faq: [
@@ -780,12 +786,12 @@ const CONFIG = {
     const p = CONFIG.partner || {};
     if (!har(p.navn)) { $("partner-seksjon").hidden = true; $("top-annonse").remove(); }
     else {
-      const innhold = har(p.logo) ? '<img src="' + esc(p.logo) + '" alt="' + esc(p.navn) + '">' : esc(p.navn);
+      const innhold = har(p.logo) ? '<span class="plate"><img src="' + esc(p.logo) + '" alt="' + esc(p.navn) + '"></span>' : esc(p.navn);
       $("partner-navn").innerHTML = har(p.lenke)
         ? '<a class="partner-navn" href="' + esc(p.lenke) + '" target="_blank" rel="noopener sponsored">' + innhold + "</a>"
         : '<span class="partner-navn">' + innhold + "</span>";
       const merke = (x) => {
-        const inn = har(x.logo) ? '<img src="' + esc(x.logo) + '" alt="' + esc(x.navn) + '">' : esc(x.navn);
+        const inn = har(x.logo) ? '<span class="plate"><img src="' + esc(x.logo) + '" alt="' + esc(x.navn) + '"></span>' : esc(x.navn);
         return har(x.lenke) ? '<a class="partner-navn" href="' + esc(x.lenke) + '" target="_blank" rel="noopener sponsored">' + inn + "</a>" : '<span class="partner-navn">' + inn + "</span>";
       };
       const flere = (CONFIG.partnere || []).filter((x) => x && har(x.navn));
@@ -1046,7 +1052,7 @@ const CONFIG = {
     const liste = (CONFIG.gjester || []).filter((g) => g && har(g.navn));
     const boks = $("gjester-innhold");
     if (!liste.length) {
-      settHtml(boks, '<div class="tom">' + IKON.stol + "<div><b>Gjestene avsløres fortløpende</b><p>Ingen navn før de er bekreftet.</p></div></div>");
+      settHtml(boks, '<div class="tom">' + IKON.stol + "<div><b>Gjestene avsløres fortløpende</b></div></div>");
       return;
     }
     settHtml(boks, '<ul class="gjester">' + liste.map((g) => {
