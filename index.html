@@ -394,7 +394,9 @@ p { margin: 0; }
 .partner-navn .plate img { display: block; height: 46px; max-height: none; width: auto; max-width: 100%; }
 .partnere ul { column-gap: 40px; row-gap: 10px; align-items: center; }
 .partnere .partner-navn .plate img { height: 34px; }
-@media (max-width: 420px) { .partner-navn .plate img { height: 40px; } .partnere ul { column-gap: 28px; } .partnere .partner-navn .plate img { height: 30px; } }
+.partnere .partner-navn .plate.hoy { padding-block: 0; }
+.partnere .partner-navn .plate.hoy img { height: 62px; }   /* stående logo: like mye «vekt» som ordmerkene */
+@media (max-width: 420px) { .partner-navn .plate img { height: 40px; } .partnere ul { column-gap: 28px; } .partnere .partner-navn .plate img { height: 30px; } .partnere .partner-navn .plate.hoy img { height: 54px; } }
 
 /* ---------- FAQ ---------- */
 .faq { max-width: 780px; border-top: 1px solid var(--strek); }
@@ -651,10 +653,12 @@ const CONFIG = {
   partner: { navn: "Komplett", lenke: "", logo: "assets/partnere/komplett-lys.webp" },
 
   // Øvrige partnere, vises under hovedpartneren. Samme felter. Tom liste skjuler raden.
+  // hoy: true for stående logoer (høyere enn brede), så de vises større enn ordmerkene.
   partnere: [
     { navn: "Ønsk", lenke: "", logo: "assets/partnere/onsk-lys.webp" },
     { navn: "Storytel", lenke: "", logo: "assets/partnere/storytel-lys.webp" },
-    { navn: "Domino's", lenke: "", logo: "assets/partnere/dominos-lys.webp" }
+    { navn: "Domino's", lenke: "", logo: "assets/partnere/dominos-lys.webp" },
+    { navn: "Arendals Bryggeri", lenke: "", logo: "assets/partnere/arendals-bryggeri-lys.webp", hoy: true }
   ],
 
   faq: [
@@ -797,7 +801,7 @@ const CONFIG = {
         ? '<a class="partner-navn" href="' + esc(p.lenke) + '" target="_blank" rel="noopener sponsored">' + innhold + "</a>"
         : '<span class="partner-navn">' + innhold + "</span>";
       const merke = (x) => {
-        const inn = har(x.logo) ? '<span class="plate"><img src="' + esc(x.logo) + '" alt="' + esc(x.navn) + '"></span>' : esc(x.navn);
+        const inn = har(x.logo) ? '<span class="plate' + (x.hoy ? " hoy" : "") + '"><img src="' + esc(x.logo) + '" alt="' + esc(x.navn) + '"></span>' : esc(x.navn);
         return har(x.lenke) ? '<a class="partner-navn" href="' + esc(x.lenke) + '" target="_blank" rel="noopener sponsored">' + inn + "</a>" : '<span class="partner-navn">' + inn + "</span>";
       };
       const flere = (CONFIG.partnere || []).filter((x) => x && har(x.navn));
