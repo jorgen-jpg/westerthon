@@ -1100,10 +1100,35 @@ const CONFIG = {
       const åpen = h && har(h.tekst);
       return "<li" + (åpen ? "" : " data-laast") + ">" + (åpen ? IKON.aapen : IKON.laas) + '<div><span class="hint-nr">Hint ' + (i + 1) + '</span><p class="hint-tekst">' + (åpen ? esc(h.tekst) : "Låst") + "</p></div></li>";
     }).join(""));
-    const bilde = $("kamera-bilde");
-    const vis = (b) => { bilde.hidden = !b; $("kamera-tom").hidden = b; $("kamera-skog").hidden = b; $("hud").hidden = !b; };
-    if (har(k.bilde)) { bilde.onerror = () => vis(false); bilde.src = k.bilde; vis(true); }
-    else vis(false);
+  }
+  async function oppdaterKamerabilde() {
+    try {
+      let kilde = CONFIG.koffert.bilde;
+      let tidspunkt;
+      if (!har(kilde)) {
+        const svar = await fetch("./assets/koffertkamera.json", { cache: "no-store" });
+        if (!svar.ok) return;
+        const siste = await svar.json();
+        kilde = siste.bilde;
+        tidspunkt = siste.tidspunkt;
+      }
+      if (!har(kilde)) return;
+      const bilde = $("kamera-bilde");
+      const url = new URL(kilde, document.baseURI);
+      if (tidspunkt) url.searchParams.set("v", tidspunkt);
+      if (bilde.src === url.href) return;
+      const neste = new Image();
+      neste.src = url.href;
+      await neste.decode();
+      bilde.src = neste.src;
+      bilde.hidden = false;
+      $("kamera-tom").hidden = $("kamera-skog").hidden = true;
+      $("hud").hidden = false;
+      const dato = new Date(tidspunkt);
+      sett($("hud-tid"), tidspunkt && Number.isFinite(dato.getTime()) ? hudFmt.format(dato) : "");
+    } catch {
+      // Behold siste lesbare bilde ved nettverksfeil.
+    }
   }
   const hudFmt = new Intl.DateTimeFormat("nb-NO", { timeZone: TZ, day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
 
@@ -1127,7 +1152,7 @@ const CONFIG = {
   function tegnMinutt() {
     const t = naa();
     sett($("l-klokke"), klFmt.format(t) + " · " + klDato.format(t));
-    sett($("hud-tid"), hudFmt.format(t).replace(",", ""));
+
     tegnProgram();
   }
 
@@ -1167,6 +1192,8 @@ const CONFIG = {
   function start() {
   LOGO = har(CONFIG.logo) ? CONFIG.logo : (window.WESTERTHON_LOGO || "");
   lagFast();
+  oppdaterKamerabilde();
+  setInterval(oppdaterKamerabilde, 5 * 60 * 1000);
   if (PREVIEW) lagForhandsvisning(); else tegnAlt();
 
   let sistModus = modus(), sistMinutt = Math.floor(naa().getTime() / 60000);
