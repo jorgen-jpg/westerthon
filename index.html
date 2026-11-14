@@ -353,22 +353,9 @@ p { margin: 0; }
       color-mix(in srgb, var(--vilt) 13%, transparent) 79% 84%, transparent 84%),
     radial-gradient(80% 70% at 50% 45%, color-mix(in srgb, var(--vilt) 12%, transparent), transparent 75%);
 }
-.korn {
-  position: absolute; inset: 0; opacity: 0.3; mix-blend-mode: screen; pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 -0.35'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-.hud { position: absolute; inset: 0; padding: 12px 14px; display: flex; flex-direction: column; justify-content: space-between; font: 700 13px/1.2 var(--f-tekst); letter-spacing: 0.06em; font-variant-numeric: tabular-nums; text-shadow: 0 1px 2px var(--viltskygge); }
-.hud-rad { display: flex; justify-content: space-between; gap: 12px; }
-.hud-rec { display: inline-flex; align-items: center; gap: 6px; }
-.hud-rec i { width: 8px; height: 8px; border-radius: 50%; background: var(--vilt); }
 .kamera-tom { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; gap: 4px; padding: 48px 20px; }
 .kamera-tom b { font: 700 24px/1.1 var(--f-display); text-transform: uppercase; }
 .kamera-tom span { font-size: 14px; }
-.hjorne { position: absolute; width: 22px; height: 22px; border: 0 solid var(--vilt); opacity: 0.8; }
-.hjorne.a { top: 8px; left: 8px; border-top-width: 2px; border-left-width: 2px; }
-.hjorne.b { top: 8px; right: 8px; border-top-width: 2px; border-right-width: 2px; }
-.hjorne.c { bottom: 8px; left: 8px; border-bottom-width: 2px; border-left-width: 2px; }
-.hjorne.d { bottom: 8px; right: 8px; border-bottom-width: 2px; border-right-width: 2px; }
 .pott { display: grid; gap: 2px; margin-bottom: 20px; }
 .pott span { color: var(--dempet); }
 .pott b { font: 700 52px/0.95 var(--f-display); color: var(--magenta-tekst); font-variant-numeric: tabular-nums; }
@@ -546,16 +533,9 @@ p { margin: 0; }
           <div class="kamera-skog" id="kamera-skog"></div>
           <img class="kamera-bilde" id="kamera-bilde" alt="Bilde fra viltkameraet ved kofferten" hidden>
           <div class="kamera-tom" id="kamera-tom"><b>Ingen bilde ennå</b><span>Bildet fra viltkameraet vises her.</span></div>
-          <div class="korn" aria-hidden="true"></div>
-          <span class="hjorne a" aria-hidden="true"></span><span class="hjorne b" aria-hidden="true"></span>
-          <span class="hjorne c" aria-hidden="true"></span><span class="hjorne d" aria-hidden="true"></span>
-          <div class="hud" id="hud" aria-hidden="true" hidden>
-            <div class="hud-rad"><span>VILTKAMERA</span><span class="hud-rec"><i></i>IR</span></div>
-            <div class="hud-rad"><span id="hud-tid"></span><span>KOFFERTEN</span></div>
-          </div>
         </figure>
         <div>
-          <div class="pott" id="pott" hidden><span>I potten</span><b id="pott-belop"></b></div>
+          <div class="pott" id="pott" hidden><span>I kofferten</span><b id="pott-belop"></b></div>
           <div id="hint-blokk" hidden><h3 class="hint-tittel">Hint</h3><ol class="hint" id="hint"></ol></div>
         </div>
       </div>
@@ -1144,14 +1124,10 @@ const CONFIG = {
       bilde.src = neste.src;
       bilde.hidden = false;
       $("kamera-tom").hidden = $("kamera-skog").hidden = true;
-      $("hud").hidden = false;
-      const dato = new Date(tidspunkt);
-      sett($("hud-tid"), tidspunkt && Number.isFinite(dato.getTime()) ? hudFmt.format(dato) : "");
     } catch {
       // Behold siste lesbare bilde ved nettverksfeil.
     }
   }
-  const hudFmt = new Intl.DateTimeFormat("nb-NO", { timeZone: TZ, day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
 
   /* ---------- bunnlinja ---------- */
   const klFmt = new Intl.DateTimeFormat("nb-NO", { timeZone: TZ, hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
