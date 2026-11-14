@@ -656,7 +656,8 @@ const CONFIG = {
   partnere: [
     { navn: "Ønsk", lenke: "", logo: "assets/partnere/onsk-lys.webp" },
     { navn: "Storytel", lenke: "", logo: "assets/partnere/storytel-lys.webp" },
-    { navn: "Domino's", lenke: "", logo: "assets/partnere/dominos-lys.webp" }
+    { navn: "Domino's", lenke: "", logo: "assets/partnere/dominos-lys.webp" },
+    { navn: "React", lenke: "", logo: "assets/partnere/react-lys.webp" }
   ],
 
   faq: [
@@ -749,8 +750,28 @@ const CONFIG = {
   const naa = () => (state.fastTid ? new Date(state.fastTid.getTime()) : new Date());
   function modus() {
     if (["nedtelling", "live", "ferdig"].includes(state.modus)) return state.modus;
-    return naa() >= START ? "live" : "nedtelling";
+    return naa() >= START || twitchLive ? "live" : "nedtelling";
   }
+
+  /* ---------- er kanalen live på Twitch? (går live før starttid hvis streamen er i gang) ---------- */
+  let twitchLive = false, liveFra = null;
+  function uptimeSek(t) {
+    const enh = { day: 86400, hour: 3600, minute: 60, second: 1 };
+    let sum = 0, funnet = false;
+    String(t).replace(/(\d+)\s*(day|hour|minute|second)/g, (_, n, e) => { sum += Number(n) * enh[e]; funnet = true; });
+    return funnet ? sum : null;
+  }
+  async function sjekkLive() {
+    if (PREVIEW || state.modus !== "auto" || state.fastTid || naa() >= START) return;
+    try {
+      const r = await fetch("https://decapi.me/twitch/uptime/" + encodeURIComponent(CONFIG.kanal) + "?t=" + Date.now(), { cache: "no-store" });
+      if (!r.ok) return;
+      const sek = uptimeSek(await r.text());
+      twitchLive = sek !== null;
+      liveFra = twitchLive ? new Date(Date.now() - sek * 1000) : null;
+    } catch (e) { /* ingen svar: faller tilbake til starttiden */ }
+  }
+  const liveStart = () => (liveFra && liveFra < START ? liveFra : START);
 
   /* ---------- ikoner (egne) ---------- */
   const IKON = {
@@ -1140,7 +1161,7 @@ const CONFIG = {
     $("linjen").dataset.modus = m;
     sett($("l-etikett"), m === "live" ? "Live i" : m === "ferdig" ? "Westerthon er ferdig" : "Starter om");
     if (m !== "ferdig") {
-      const ms = Math.max(0, m === "live" ? t - START : START - t);
+      const ms = Math.max(0, m === "live" ? t - liveStart() : START - t);
       const s = m === "live" ? Math.floor(ms / 1000) : Math.ceil(ms / 1000); // nedtelling rundes opp: 00:00:00:00 vises aldri før start
       sett($("t-d"), pad(Math.floor(s / 86400)));
       sett($("t-t"), pad(Math.floor((s % 86400) / 3600)));
@@ -1195,6 +1216,8 @@ const CONFIG = {
   oppdaterKamerabilde();
   setInterval(oppdaterKamerabilde, 5 * 60 * 1000);
   if (PREVIEW) lagForhandsvisning(); else tegnAlt();
+  sjekkLive();
+  setInterval(sjekkLive, 30 * 1000);
 
   let sistModus = modus(), sistMinutt = Math.floor(naa().getTime() / 60000);
   setInterval(() => {
